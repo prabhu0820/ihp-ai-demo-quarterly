@@ -3,35 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IHP Dashboard — FY 2024/25 v3</title>
+<title>IHP Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f3ef; padding: 1.5rem 1rem; min-height: 100vh; }
-.page { max-width: 860px; margin: 0 auto; }
+.page { max-width: 880px; margin: 0 auto; }
 
+/* Header */
 .header { text-align: center; margin-bottom: 1.6rem; }
 .pill { display: inline-flex; align-items: center; background: #fff; border: 1px solid #e0ded6; border-radius: 20px; padding: 5px 16px; margin-bottom: 12px; }
 .pill span { font-size: 11px; font-weight: 600; color: #888780; letter-spacing: 0.07em; text-transform: uppercase; }
 .header h1 { font-size: 22px; font-weight: 600; color: #2c2c2a; margin-bottom: 3px; }
-.header p { font-size: 14px; color: #888780; }
+.header .subtitle { font-size: 14px; color: #888780; }
 
-/* Action bar */
-.action-bar { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #e0ded6; border-radius: 12px; padding: 10px 16px; margin-top: 1.6rem; }
-.action-bar label { font-size: 12px; font-weight: 600; color: #185FA5; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; cursor: pointer; }
-.action-bar input[type=file] { flex: 1; font-size: 12px; color: #888780; min-width: 0; }
-.upload-status { font-size: 12px; color: #3B6D11; font-weight: 600; white-space: nowrap; }
-.upload-status.err { color: #993C1D; }
-.bar-divider { width: 1px; height: 24px; background: #e0ded6; flex-shrink: 0; }
-.btn-pdf { display: inline-flex; align-items: center; gap: 7px; background: #1E3A5F; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; letter-spacing: 0.03em; transition: background 0.15s; flex-shrink: 0; }
-.btn-pdf:hover { background: #2a4f7f; }
+/* FY Tabs — top level */
+.fy-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.fy-tab { flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 700; color: #888780; background: #fff; border: 1.5px solid #e0ded6; border-radius: 12px; cursor: pointer; transition: all 0.18s; letter-spacing: 0.02em; }
+.fy-tab:hover { border-color: #1E3A5F; color: #1E3A5F; }
+.fy-tab.active { background: #1E3A5F; color: #fff; border-color: #1E3A5F; box-shadow: 0 2px 8px rgba(30,58,95,0.18); }
 
-/* Tabs */
-.tabs { display: flex; gap: 4px; margin-bottom: 1.2rem; background: #e8e6df; border-radius: 12px; padding: 4px; }
-.tab { flex: 1; padding: 8px 4px; text-align: center; font-size: 12px; font-weight: 600; color: #888780; border-radius: 9px; cursor: pointer; transition: all 0.18s; user-select: none; letter-spacing: 0.03em; }
-.tab:hover { background: rgba(255,255,255,0.6); color: #2c2c2a; }
-.tab.active { background: #fff; color: #1E3A5F; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-.tab.annual.active { color: #534AB7; }
+/* Quarter Tabs — second level */
+.q-tabs-wrap { background: #e8e6df; border-radius: 12px; padding: 4px; margin-bottom: 1.2rem; display: flex; gap: 4px; }
+.q-tab { flex: 1; padding: 8px 4px; text-align: center; font-size: 12px; font-weight: 600; color: #888780; border-radius: 9px; cursor: pointer; transition: all 0.18s; user-select: none; }
+.q-tab:hover { background: rgba(255,255,255,0.6); color: #2c2c2a; }
+.q-tab.active { background: #fff; color: #1E3A5F; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.q-tab.annual.active { color: #534AB7; }
 
 /* Section label */
 .section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -39,16 +36,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .section-title { font-size: 12px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.07em; }
 .section-line { flex: 1; height: 1px; background: #e0ded6; }
 
-/* Cards */
+/* Cards — construction: now 4 in a row, 2+2 grid */
 .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2rem; }
-.card { background: #fff; border: 1px solid #e8e6df; border-radius: 14px; padding: 1.1rem 1.1rem 0.9rem; position: relative; overflow: hidden; }
+.card { background: #fff; border: 1px solid #e8e6df; border-radius: 14px; padding: 1rem 1rem 0.8rem; position: relative; overflow: hidden; }
 .card-top { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0; }
-.card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.card-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
 .card-lbl { font-size: 10px; color: #888780; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-.card-val { font-size: 36px; font-weight: 600; line-height: 1; }
-.card-sub { font-size: 11px; color: #888780; margin-top: 6px; }
+.card-val { font-size: 32px; font-weight: 600; line-height: 1; }
+.card-sub { font-size: 11px; color: #888780; margin-top: 5px; }
 .card-val-row { display: flex; align-items: baseline; gap: 4px; }
-.card-unit { font-size: 14px; color: #888780; }
+.card-unit { font-size: 13px; color: #888780; }
 
 /* Lab grid */
 .lab-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; align-items: stretch; }
@@ -58,7 +55,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .cat-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
 .install-total { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
 .install-big { font-size: 40px; font-weight: 600; color: #185FA5; line-height: 1; }
-.install-lbl { font-size: 13px; color: #888780; }
+.install-lbl { font-size: 12px; color: #888780; }
 .stacked-bar { height: 10px; border-radius: 8px; overflow: hidden; display: flex; gap: 2px; margin-bottom: 10px; }
 .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 12px; margin-bottom: 14px; }
 .brow { display: flex; align-items: center; gap: 7px; }
@@ -69,35 +66,44 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .vf-left { display: flex; align-items: center; gap: 8px; }
 .vf-icon { width: 30px; height: 30px; border-radius: 8px; background: #EEEDFE; display: flex; align-items: center; justify-content: center; }
 .vf-lbl { font-size: 10px; color: #888780; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
-.vf-amt { font-size: 22px; font-weight: 600; color: #534AB7; line-height: 1.2; }
+.vf-amt { font-size: 20px; font-weight: 600; color: #534AB7; line-height: 1.2; }
 .vf-badge { background: #EEEDFE; border-radius: 8px; padding: 6px 10px; text-align: center; }
 .vf-badge p { font-size: 11px; color: #534AB7; font-weight: 600; }
 .vf-badge span { font-size: 11px; color: #7F77DD; }
 .assess-stack { display: flex; flex-direction: column; gap: 12px; padding: 14px; flex: 1; }
 .assess-item { background: #f7f6f2; border-radius: 10px; padding: 12px 14px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
 .albl { font-size: 10px; color: #888780; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-.aval { font-size: 36px; font-weight: 600; line-height: 1; }
+.aval { font-size: 34px; font-weight: 600; line-height: 1; }
 .asub { font-size: 11px; color: #888780; margin-top: 4px; }
 
 /* No data */
-.no-data { text-align: center; padding: 3rem 1rem; color: #aaa; }
+.no-data { text-align: center; padding: 2.5rem 1rem; color: #aaa; }
 .no-data svg { display: block; margin: 0 auto 12px; opacity: 0.3; }
 .no-data p { font-size: 14px; }
 
-/* PDF hidden container — visible only when printing */
-#pdf-content { display: none; }
+/* Action bar */
+.action-bar { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #e0ded6; border-radius: 12px; padding: 10px 16px; margin-top: 1.6rem; flex-wrap: wrap; }
+.action-bar label { font-size: 12px; font-weight: 600; color: #185FA5; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; cursor: pointer; }
+.action-bar input[type=file] { flex: 1; font-size: 12px; color: #888780; min-width: 120px; }
+.upload-status { font-size: 12px; color: #3B6D11; font-weight: 600; }
+.upload-status.err { color: #993C1D; }
+.bar-divider { width: 1px; height: 24px; background: #e0ded6; flex-shrink: 0; }
+.btn-pdf { display: inline-flex; align-items: center; gap: 7px; background: #1E3A5F; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.15s; flex-shrink: 0; }
+.btn-pdf:hover { background: #2a4f7f; }
 
+/* PDF */
+#pdf-content { display: none; }
 @media print {
   body { background: #f4f3ef !important; padding: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .page > .header, .page > .tabs, .page > #dashboard-content, .page > .action-bar { display: none !important; }
+  .page > * { display: none !important; }
   #pdf-content { display: block !important; }
-  .pdf-page { page-break-after: always; padding: 1.4rem 1.2rem; max-width: 860px; margin: 0 auto; }
+  .pdf-page { page-break-after: always; padding: 1.2rem 1.2rem; max-width: 880px; margin: 0 auto; }
   .pdf-page:last-child { page-break-after: avoid; }
-  .pdf-page-header { text-align: center; margin-bottom: 1.4rem; padding-bottom: 0.9rem; border-bottom: 2px solid #e0ded6; }
-  .pdf-page-header .pdf-pill { display: inline-flex; align-items: center; background: #fff; border: 1px solid #e0ded6; border-radius: 20px; padding: 4px 14px; margin-bottom: 8px; }
-  .pdf-page-header .pdf-pill span { font-size: 10px; font-weight: 600; color: #888780; letter-spacing: 0.07em; text-transform: uppercase; }
-  .pdf-page-header h2 { font-size: 20px; font-weight: 600; color: #2c2c2a; margin-bottom: 2px; }
-  .pdf-page-header .pdf-period { font-size: 14px; font-weight: 700; color: #1E3A5F; margin-top: 4px; }
+  .pdf-page-hdr { text-align: center; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 2px solid #e0ded6; }
+  .pdf-page-hdr .pdf-pill { display: inline-flex; background: #fff; border: 1px solid #e0ded6; border-radius: 20px; padding: 4px 14px; margin-bottom: 8px; }
+  .pdf-page-hdr .pdf-pill span { font-size: 10px; font-weight: 600; color: #888780; letter-spacing: 0.07em; text-transform: uppercase; }
+  .pdf-page-hdr h2 { font-size: 18px; font-weight: 600; color: #2c2c2a; margin-bottom: 2px; }
+  .pdf-page-hdr .pdf-period { font-size: 15px; font-weight: 700; color: #1E3A5F; margin-top: 4px; }
 }
 </style>
 </head>
@@ -107,84 +113,113 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="header">
     <div class="pill"><span>Facilities Management · C&amp;C · KAUST</span></div>
     <h1>In-House Projects (IHP)</h1>
-    <p>FY 2024/25 — Quarterly Dashboard</p>
+    <p class="subtitle">Multi-Year Quarterly Dashboard</p>
   </div>
 
-  <div class="tabs">
-    <div class="tab" onclick="switchTab('Q1')">Q1</div>
-    <div class="tab" onclick="switchTab('Q2')">Q2</div>
-    <div class="tab active" onclick="switchTab('Q3')">Q3</div>
-    <div class="tab" onclick="switchTab('Q4')">Q4</div>
-    <div class="tab annual" onclick="switchTab('Annual')">Annual</div>
+  <!-- FY selector -->
+  <div class="fy-tabs">
+    <div class="fy-tab active" data-fy="2024_25">FY 2024/25</div>
+    <div class="fy-tab" data-fy="2025_26">FY 2025/26</div>
+  </div>
+
+  <!-- Quarter tabs -->
+  <div class="q-tabs-wrap">
+    <div class="q-tab" data-q="Q1">Q1</div>
+    <div class="q-tab" data-q="Q2">Q2</div>
+    <div class="q-tab active" data-q="Q3">Q3</div>
+    <div class="q-tab" data-q="Q4">Q4</div>
+    <div class="q-tab annual" data-q="Annual">Annual</div>
   </div>
 
   <div id="dashboard-content"></div>
-
   <div id="pdf-content"></div>
 
   <div class="action-bar">
     <label for="file-input">📂 Load Data</label>
-    <input type="file" id="file-input" accept=".xlsx,.xls" onchange="loadExcel(this)">
-    <span class="upload-status" id="upload-status">Using built-in Q3 data · Upload Excel to refresh</span>
+    <input type="file" id="file-input" accept=".xlsx,.xls">
+    <span class="upload-status" id="upload-status">Using built-in Q3 FY2024/25 data · Upload Excel to refresh</span>
     <div class="bar-divider"></div>
-    <button class="btn-pdf" onclick="downloadPDF()">
+    <button class="btn-pdf" id="btn-pdf">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-      Download PDF
+      Download PDF Report
     </button>
   </div>
 
 </div>
-
 <script>
-// ── Data ─────────────────────────────────────────────────────────────────────
-let DATA = {
-  Q1: { cp_completed:null, cp_surveys:null, cp_satisfaction:null, le_total:null, le_capital:null, le_baseline:null, le_existing:null, le_casework:null, le_value:null, le_po:null, le_asepc:null },
-  Q2: { cp_completed:null, cp_surveys:null, cp_satisfaction:null, le_total:null, le_capital:null, le_baseline:null, le_existing:null, le_casework:null, le_value:null, le_po:null, le_asepc:null },
-  Q3: { cp_completed:22, cp_surveys:11, cp_satisfaction:9.5, le_total:70, le_capital:12, le_baseline:31, le_existing:20, le_casework:7, le_value:2.6, le_po:59, le_asepc:38 },
-  Q4: { cp_completed:null, cp_surveys:null, cp_satisfaction:null, le_total:null, le_capital:null, le_baseline:null, le_existing:null, le_casework:null, le_value:null, le_po:null, le_asepc:null }
-};
-let currentTab = 'Q3';
+// ── Data store ────────────────────────────────────────────────────────────────
+const emptyQ = () => ({ cp_completed:null, cp_surveys:null, cp_satisfaction:null, le_total:null, le_capital:null, le_baseline:null, le_existing:null, le_casework:null, le_value:null, le_po:null, le_asepc:null });
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const isNull = v => v===null||v===undefined||v==='';
-function fmt(v)    { return isNull(v) ? '—' : v; }
-function fmtM(v)   { return isNull(v) ? '—' : '$'+parseFloat(v).toFixed(1)+'M'; }
-function fmtSat(v) { return isNull(v) ? '—' : (parseFloat(v)/10*100).toFixed(1)+'%'; }
-function annualSum(k) { let s=0,any=false; ['Q1','Q2','Q3','Q4'].forEach(q=>{ if(!isNull(DATA[q][k])){s+=parseFloat(DATA[q][k]);any=true;}}); return any?s:null; }
-function annualAvg(k) {
-  let s=0, c=0;
+let DATA = {
+  '2024_25': {
+    Q1: emptyQ(), Q2: emptyQ(),
+    Q3: { cp_completed:22, cp_surveys:11, cp_satisfaction:9.5, le_total:70, le_capital:12, le_baseline:31, le_existing:20, le_casework:7, le_value:2.6, le_po:59, le_asepc:38 },
+    Q4: emptyQ()
+  },
+  '2025_26': { Q1: emptyQ(), Q2: emptyQ(), Q3: emptyQ(), Q4: emptyQ() }
+};
+
+let currentFY = '2024_25';
+let currentQ  = 'Q3';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const isNull = v => v === null || v === undefined || v === '';
+const fmt    = v => isNull(v) ? '—' : v;
+const fmtM   = v => isNull(v) ? '—' : '$' + parseFloat(v).toFixed(1) + 'M';
+const fmtSat = v => isNull(v) ? '—' : (parseFloat(v) / 10 * 100).toFixed(1) + '%';
+
+function annualSum(fy, k) {
+  let s = 0, any = false;
+  ['Q1','Q2','Q3','Q4'].forEach(q => { const v = DATA[fy][q][k]; if (!isNull(v)) { s += parseFloat(v); any = true; } });
+  return any ? s : null;
+}
+function annualAvgSat(fy) {
+  let s = 0, c = 0;
   ['Q1','Q2','Q3','Q4'].forEach(q => {
-    const val = DATA[q][k];
-    const surveys = DATA[q]['cp_surveys'];
-    // Only include if this quarter has both a rating AND survey responses
-    if (!isNull(val) && !isNull(surveys) && parseFloat(surveys) > 0) {
-      s += parseFloat(val);
-      c++;
-    }
+    const v = DATA[fy][q]['cp_satisfaction'];
+    const surveys = DATA[fy][q]['cp_surveys'];
+    if (!isNull(v) && !isNull(surveys) && parseFloat(surveys) > 0) { s += parseFloat(v); c++; }
   });
   return c ? s / c : null;
 }
-function getD(tab) {
-  if (tab==='Annual') return { cp_completed:annualSum('cp_completed'), cp_surveys:annualSum('cp_surveys'), cp_satisfaction:annualAvg('cp_satisfaction'), le_total:annualSum('le_total'), le_capital:annualSum('le_capital'), le_baseline:annualSum('le_baseline'), le_existing:annualSum('le_existing'), le_casework:annualSum('le_casework'), le_value:annualSum('le_value'), le_po:annualSum('le_po'), le_asepc:annualSum('le_asepc') };
-  return DATA[tab];
+
+function getD(fy, tab) {
+  if (tab !== 'Annual') return DATA[fy][tab];
+  return {
+    cp_completed:   annualSum(fy,'cp_completed'),
+    cp_surveys:     annualSum(fy,'cp_surveys'),
+    cp_satisfaction:annualAvgSat(fy),
+    le_total:       annualSum(fy,'le_total'),
+    le_capital:     annualSum(fy,'le_capital'),
+    le_baseline:    annualSum(fy,'le_baseline'),
+    le_existing:    annualSum(fy,'le_existing'),
+    le_casework:    annualSum(fy,'le_casework'),
+    le_value:       annualSum(fy,'le_value'),
+    le_po:          annualSum(fy,'le_po'),
+    le_asepc:       annualSum(fy,'le_asepc'),
+  };
 }
-function barPct(v,t) { if(!t||!v) return '0%'; return Math.round((v/t)*100)+'%'; }
-function craneIcon(c) { return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="2" x2="6" y2="22"/><line x1="6" y1="6" x2="20" y2="2"/><line x1="20" y1="2" x2="20" y2="8"/><line x1="6" y1="6" x2="20" y2="8"/><line x1="13" y1="4" x2="13" y2="11"/><line x1="13" y1="11" x2="10" y2="17"/><line x1="6" y1="18" x2="9" y2="18"/><line x1="9" y1="18" x2="9" y2="22"/></svg>`; }
-function microscopeIcon(c) { return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>`; }
+
+function barPct(v, t) { if (!t || !v) return '0%'; return Math.round((v / t) * 100) + '%'; }
+
+const craneIcon = c => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="2" x2="6" y2="22"/><line x1="6" y1="6" x2="20" y2="2"/><line x1="20" y1="2" x2="20" y2="8"/><line x1="6" y1="6" x2="20" y2="8"/><line x1="13" y1="4" x2="13" y2="11"/><line x1="13" y1="11" x2="10" y2="17"/><line x1="6" y1="18" x2="9" y2="18"/><line x1="9" y1="18" x2="9" y2="22"/></svg>`;
+const microIcon = c => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>`;
 
 // ── Core block builder ────────────────────────────────────────────────────────
-function buildBlock(tab) {
-  const d = getD(tab);
-  const isAnnual = tab==='Annual';
-  const hasData = Object.values(d).some(v=>!isNull(v));
-  if (!hasData) return `<div class="no-data"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#888780" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><p>No data yet for <strong>${tab}</strong>.<br>Upload your Excel file to add data.</p></div>`;
+function buildBlock(fy, tab) {
+  const d = getD(fy, tab);
+  const isAnnual = tab === 'Annual';
+  const fyLabel = fy.replace('_','/');
+  const hasData = Object.values(d).some(v => !isNull(v));
 
-  const tot=d.le_total||0;
-  const c1w=barPct(d.le_capital,tot), c2w=barPct(d.le_baseline,tot), c3w=barPct(d.le_existing,tot), c4w=barPct(d.le_casework,tot);
-  const cpSub=isAnnual?'Full-year total':'Quarter deliveries';
-  const surSub=isAnnual?'Full-year surveys':'End-user surveys';
-  const instSub=isAnnual?'Full-year total':'Total completed this quarter';
-  const valPer=isAnnual?'year':'quarter';
+  if (!hasData) return `<div class="no-data"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#888780" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><p>No data yet for <strong>${tab === 'Annual' ? 'Annual' : tab}</strong> — FY ${fyLabel}.<br>Upload your Excel file to add data.</p></div>`;
+
+  const tot = d.le_total || 0;
+  const c1w = barPct(d.le_capital,tot), c2w = barPct(d.le_baseline,tot), c3w = barPct(d.le_existing,tot), c4w = barPct(d.le_casework,tot);
+  const cpSub   = isAnnual ? 'Full-year total'            : 'Quarter deliveries';
+  const surSub  = isAnnual ? 'Full-year surveys'          : 'End-user surveys';
+  const instSub = isAnnual ? 'Full-year total'            : 'Total this quarter';
+  const vp      = isAnnual ? 'year'                       : 'quarter';
 
   return `
     <div class="section-label">
@@ -193,24 +228,32 @@ function buildBlock(tab) {
       <div class="section-line"></div>
     </div>
     <div class="cards-3">
-      <div class="card"><div class="card-top" style="background:#1D9E75"></div>
-        <div class="card-icon" style="background:#E1F5EE"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <p class="card-lbl">Projects completed</p><div class="card-val" style="color:#0F6E56">${fmt(d.cp_completed)}</div><p class="card-sub">${cpSub}</p>
+      <div class="card">
+        <div class="card-top" style="background:#1D9E75"></div>
+        <div class="card-icon" style="background:#E1F5EE"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <p class="card-lbl">Projects completed</p>
+        <div class="card-val" style="color:#0F6E56">${fmt(d.cp_completed)}</div>
+        <p class="card-sub">${cpSub}</p>
       </div>
-      <div class="card"><div class="card-top" style="background:#534AB7"></div>
-        <div class="card-icon" style="background:#EEEDFE"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3C3489" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-        <p class="card-lbl">Feedback received</p><div class="card-val" style="color:#3C3489">${fmt(d.cp_surveys)}</div><p class="card-sub">${surSub}</p>
+
+      <div class="card">
+        <div class="card-top" style="background:#534AB7"></div>
+        <div class="card-icon" style="background:#EEEDFE"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3C3489" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <p class="card-lbl">Feedback received</p>
+        <div class="card-val" style="color:#3C3489">${fmt(d.cp_surveys)}</div>
+        <p class="card-sub">${surSub}</p>
       </div>
-      <div class="card"><div class="card-top" style="background:#BA7517"></div>
-        <div class="card-icon" style="background:#FAEEDA"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#854F0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="card">
+        <div class="card-top" style="background:#BA7517"></div>
+        <div class="card-icon" style="background:#FAEEDA"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#854F0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <p class="card-lbl">Customer satisfaction</p>
-        <div class="card-val-row"><div class="card-val" style="color:#854F0B">${fmtSat(d.cp_satisfaction)}</div></div>
-        <p class="card-sub">${isAnnual?'Year avg satisfaction':'Avg satisfaction rate'}</p>
+        <div class="card-val" style="color:#854F0B">${fmtSat(d.cp_satisfaction)}</div>
+        <p class="card-sub">${isAnnual ? 'Year avg rate' : 'Avg satisfaction rate'}</p>
       </div>
     </div>
 
     <div class="section-label">
-      <div class="section-icon" style="background:#E6F1FB">${microscopeIcon('#185FA5')}</div>
+      <div class="section-icon" style="background:#E6F1FB">${microIcon('#185FA5')}</div>
       <p class="section-title" style="color:#185FA5">Lab Equipment</p>
       <div class="section-line"></div>
     </div>
@@ -221,8 +264,8 @@ function buildBlock(tab) {
           <p style="color:#0C447C">Installation</p>
         </div>
         <div class="cat-body">
-          <div class="install-total"><span class="install-big">${fmt(d.le_total)}</span><span class="install-lbl">${!isNull(d.le_total)?instSub:''}</span></div>
-          ${!isNull(d.le_total)?`<div class="stacked-bar"><div style="width:${c1w};background:#378ADD"></div><div style="width:${c2w};background:#1D9E75"></div><div style="width:${c3w};background:#EF9F27"></div><div style="width:${c4w};background:#D85A30"></div></div>`:''}
+          <div class="install-total"><span class="install-big">${fmt(d.le_total)}</span><span class="install-lbl">${!isNull(d.le_total) ? instSub : ''}</span></div>
+          ${!isNull(d.le_total) ? `<div class="stacked-bar"><div style="width:${c1w};background:#378ADD"></div><div style="width:${c2w};background:#1D9E75"></div><div style="width:${c3w};background:#EF9F27"></div><div style="width:${c4w};background:#D85A30"></div></div>` : ''}
           <div class="breakdown-grid">
             <div class="brow"><div class="dot" style="background:#378ADD"></div><span class="blbl">Capital equipment</span><span class="bval" style="color:#185FA5">${fmt(d.le_capital)}</span></div>
             <div class="brow"><div class="dot" style="background:#1D9E75"></div><span class="blbl">Baseline equipment</span><span class="bval" style="color:#0F6E56">${fmt(d.le_baseline)}</span></div>
@@ -234,7 +277,7 @@ function buildBlock(tab) {
               <div class="vf-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
               <div><p class="vf-lbl">Equipment value installed</p><p class="vf-amt">${fmtM(d.le_value)}</p></div>
             </div>
-            <div class="vf-badge"><p>Total asset value</p><span>this ${valPer}</span></div>
+            <div class="vf-badge"><p>Total asset value</p><span>this ${vp}</span></div>
           </div>
         </div>
       </div>
@@ -252,35 +295,86 @@ function buildBlock(tab) {
 }
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
-function renderDashboard(tab) {
-  document.getElementById('dashboard-content').innerHTML = buildBlock(tab);
-}
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  ['Q1','Q2','Q3','Q4','Annual'].forEach((t,i) => { if(t===tab) document.querySelectorAll('.tab')[i].classList.add('active'); });
-  renderDashboard(tab);
+function renderDashboard() {
+  document.getElementById('dashboard-content').innerHTML = buildBlock(currentFY, currentQ);
 }
 
-// ── PDF download (browser print-to-PDF) ──────────────────────────────────────
+function switchFY(fy) {
+  currentFY = fy;
+  document.querySelectorAll('.fy-tab').forEach((t,i) => t.classList.toggle('active', ['2024_25','2025_26'][i] === fy));
+  renderDashboard();
+}
+
+function switchQ(q) {
+  currentQ = q;
+  document.querySelectorAll('.q-tab').forEach((t,i) => t.classList.toggle('active', ['Q1','Q2','Q3','Q4','Annual'][i] === q));
+  renderDashboard();
+}
+
+// ── PDF ───────────────────────────────────────────────────────────────────────
 function downloadPDF() {
-  const periods = ['Q1','Q2','Q3','Q4','Annual'];
-  const labels  = { Q1:'Quarter 1 (Q1)', Q2:'Quarter 2 (Q2)', Q3:'Quarter 3 (Q3)', Q4:'Quarter 4 (Q4)', Annual:'Annual Summary — FY 2024/25' };
+  const fyList  = ['2024_25','2025_26'];
+  const qList   = ['Q1','Q2','Q3','Q4','Annual'];
+  const qLabels = { Q1:'Quarter 1', Q2:'Quarter 2', Q3:'Quarter 3', Q4:'Quarter 4', Annual:'Annual Summary' };
 
-  const pdfDiv = document.getElementById('pdf-content');
-  pdfDiv.innerHTML = periods.map((tab,idx) => `
-    <div class="pdf-page">
-      <div class="pdf-page-header">
-        <div class="pdf-pill"><span>Facilities Management · C&amp;C · KAUST</span></div>
-        <h2>In-House Projects (IHP)</h2>
-        <div class="pdf-period">${labels[tab]}</div>
-      </div>
-      ${buildBlock(tab)}
-    </div>
-  `).join('');
+  // Grab all styles from this document
+  const styles = Array.from(document.styleSheets)
+    .map(ss => { try { return Array.from(ss.cssRules).map(r => r.cssText).join('\n'); } catch(e){ return ''; } })
+    .join('\n');
 
-  window.print();
-  setTimeout(() => { pdfDiv.innerHTML = ''; }, 1500);
+  let pages = '';
+  fyList.forEach(fy => {
+    const fyLabel = 'FY ' + fy.replace('_','/');
+    qList.forEach(q => {
+      pages += `<div class="pdf-page">
+        <div class="pdf-page-hdr">
+          <div class="pdf-pill"><span>Facilities Management · C&amp;C · KAUST</span></div>
+          <h2>In-House Projects (IHP)</h2>
+          <div class="pdf-period">${fyLabel} — ${qLabels[q]}</div>
+        </div>
+        ${buildBlock(fy, q)}
+      </div>`;
+    });
+  });
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IHP Dashboard — All Quarters</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f3ef; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+${styles}
+.pdf-page { page-break-after: always; padding: 1.2rem 1.4rem; max-width: 880px; margin: 0 auto; }
+.pdf-page:last-child { page-break-after: avoid; }
+.pdf-page-hdr { text-align: center; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 2px solid #e0ded6; }
+.pdf-pill { display: inline-flex; background: #fff; border: 1px solid #e0ded6; border-radius: 20px; padding: 4px 14px; margin-bottom: 8px; }
+.pdf-pill span { font-size: 10px; font-weight: 600; color: #888780; letter-spacing: 0.07em; text-transform: uppercase; }
+.pdf-page-hdr h2 { font-size: 18px; font-weight: 600; color: #2c2c2a; margin-bottom: 2px; }
+.pdf-period { font-size: 15px; font-weight: 700; color: #1E3A5F; margin-top: 4px; }
+@media print {
+  body { background: #f4f3ef !important; }
+  .pdf-page { page-break-after: always; }
+  .pdf-page:last-child { page-break-after: avoid; }
+}
+</style>
+</head>
+<body>
+${pages}
+<script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'IHP_Dashboard_All_Quarters.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
 // ── Excel loader ──────────────────────────────────────────────────────────────
@@ -291,41 +385,47 @@ function loadExcel(input) {
   reader.onload = function(e) {
     try {
       const wb = XLSX.read(e.target.result, {type:'array'});
-      const ws = wb.Sheets['IHP_Data'];
-      if (!ws) throw new Error('Sheet "IHP_Data" not found. Please use the provided template.');
-      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null});
-
       const metricMap = {
-        'Projects Completed':                      'cp_completed',
-        'End-User Surveys Received':               'cp_surveys',
-        'Customer Satisfaction Score (out of 10)': 'cp_satisfaction',
-        'Total Installations':                     'le_total',
-        'Capital Equipment':                       'le_capital',
-        'Baseline Equipment':                      'le_baseline',
-        'Existing Equipment':                      'le_existing',
-        'Casework':                                'le_casework',
-        'Installed Equipment Value ($M)':          'le_value',
-        'PO Approvals':                            'le_po',
-        'ASEPC Assessments':                       'le_asepc',
+        'Projects Completed':                       'cp_completed',
+        'End-User Surveys Received':                'cp_surveys',
+        'Customer Satisfaction Score (out of 10)':  'cp_satisfaction',
+        'Total Installations':                      'le_total',
+        'Capital Equipment':                        'le_capital',
+        'Baseline Equipment':                       'le_baseline',
+        'Existing Equipment':                       'le_existing',
+        'Casework':                                 'le_casework',
+        'Installed Equipment Value ($M)':           'le_value',
+        'PO Approvals':                             'le_po',
+        'ASEPC Assessments':                        'le_asepc',
       };
       const qs = ['Q1','Q2','Q3','Q4'];
-      qs.forEach(q => { DATA[q] = { cp_completed:null,cp_surveys:null,cp_satisfaction:null,le_total:null,le_capital:null,le_baseline:null,le_existing:null,le_casework:null,le_value:null,le_po:null,le_asepc:null }; });
+      let loaded = 0;
 
-      rows.forEach(row => {
-        const colA = (row[0]||'').toString().trim();
-        const colB = (row[1]||'').toString().trim();
-        if (!colB || !colA) return;   // skip blank rows and annual formula rows (colA blank)
-        const key = metricMap[colB];
-        if (!key) return;
-        [2,3,4,5].forEach((col,i) => {
-          const v = row[col];
-          if (v!==null&&v!==undefined&&v!=='') DATA[qs[i]][key] = parseFloat(v);
+      ['FY_2024_25','FY_2025_26'].forEach(sheetName => {
+        const fy = sheetName.replace('FY_','');
+        const ws = wb.Sheets[sheetName];
+        if (!ws) return;
+        const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null});
+        qs.forEach(q => { DATA[fy][q] = emptyQ(); });
+
+        rows.forEach(row => {
+          const colA = (row[0]||'').toString().trim();
+          const colB = (row[1]||'').toString().trim();
+          if (!colB || !colA) return;
+          const key = metricMap[colB];
+          if (!key) return;
+          [2,3,4,5].forEach((col,i) => {
+            const v = row[col];
+            if (v !== null && v !== undefined && v !== '') DATA[fy][qs[i]][key] = parseFloat(v);
+          });
         });
+        loaded++;
       });
 
+      if (!loaded) throw new Error('No sheets named FY_2024_25 or FY_2025_26 found.');
       document.getElementById('upload-status').textContent = '✓ Loaded: ' + file.name;
       document.getElementById('upload-status').className = 'upload-status';
-      renderDashboard(currentTab);
+      renderDashboard();
     } catch(err) {
       document.getElementById('upload-status').textContent = '✗ ' + err.message;
       document.getElementById('upload-status').className = 'upload-status err';
@@ -334,8 +434,16 @@ function loadExcel(input) {
   reader.readAsArrayBuffer(file);
 }
 
-// Initial render
-renderDashboard('Q3');
+// Init — attach listeners and render
+document.querySelectorAll('.fy-tab').forEach(t => {
+  t.addEventListener('click', () => switchFY(t.dataset.fy));
+});
+document.querySelectorAll('.q-tab').forEach(t => {
+  t.addEventListener('click', () => switchQ(t.dataset.q));
+});
+document.getElementById('btn-pdf').addEventListener('click', downloadPDF);
+document.getElementById('file-input').addEventListener('change', function() { loadExcel(this); });
+renderDashboard();
 </script>
 </body>
 </html>
